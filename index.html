@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简历生成器</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧选项栏 -->
+        <div class="options-panel">
+            <h2>模块选择</h2>
+            <!-- 基本信息模块（固定显示，不可拖动） -->
+            <div class="option-item fixed" data-module="basic-info">
+                <span>基本信息</span>
+                <label class="switch disabled">
+                    <input type="checkbox" id="basic-info-toggle" checked disabled>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <!-- 可排序的模块 -->
+            <div id="sortable-options">
+                <div class="option-item" draggable="true" data-module="education">
+                    <div class="drag-handle">≡</div>
+                    <span>教育经历</span>
+                    <label class="switch">
+                        <input type="checkbox" id="education-toggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="option-item" draggable="true" data-module="skills">
+                    <div class="drag-handle">≡</div>
+                    <span>专业技能</span>
+                    <label class="switch">
+                        <input type="checkbox" id="skills-toggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="option-item" draggable="true" data-module="work">
+                    <div class="drag-handle">≡</div>
+                    <span>工作经历</span>
+                    <label class="switch">
+                        <input type="checkbox" id="work-toggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="option-item" draggable="true" data-module="project">
+                    <div class="drag-handle">≡</div>
+                    <span>项目经历</span>
+                    <label class="switch">
+                        <input type="checkbox" id="project-toggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="option-item" draggable="true" data-module="university">
+                    <div class="drag-handle">≡</div>
+                    <span>大学信息</span>
+                    <label class="switch">
+                        <input type="checkbox" id="university-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="option-item" draggable="true" data-module="awards">
+                    <div class="drag-handle">≡</div>
+                    <span>荣誉奖项</span>
+                    <label class="switch">
+                        <input type="checkbox" id="awards-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="option-item" draggable="true" data-module="research">
+                    <div class="drag-handle">≡</div>
+                    <span>研究经历</span>
+                    <label class="switch">
+                        <input type="checkbox" id="research-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="option-item" draggable="true" data-module="portfolio">
+                    <div class="drag-handle">≡</div>
+                    <span>作品集</span>
+                    <label class="switch">
+                        <input type="checkbox" id="portfolio-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="option-item" draggable="true" data-module="other">
+                    <div class="drag-handle">≡</div>
+                    <span>其他经历</span>
+                    <label class="switch">
+                        <input type="checkbox" id="other-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="option-item" draggable="true" data-module="personal">
+                    <div class="drag-handle">≡</div>
+                    <span>个人简介</span>
+                    <label class="switch">
+                        <input type="checkbox" id="personal-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+            <button id="add-module" class="add-button">
+                <span>+</span> 添加模块
+            </button>
+        </div>
+
+        <!-- 中间编辑区 -->
+        <div class="edit-panel">
+            <div class="edit-header">
+                <h2 id="current-section-title">基本信息</h2>
+                <button class="edit-button">✏️</button>
+            </div>
+            
+            <div id="basic-info-edit" class="edit-section active">
+                <div class="form-group">
+                    <label>姓名</label>
+                    <input type="text" id="name" placeholder="请输入姓名" value="老鱼简历">
+                    <button class="clear-input">✕</button>
+                </div>
+                <div class="form-group">
+                    <label>电话</label>
+                    <input type="text" id="phone" placeholder="请输入电话号码" value="13818996520">
+                    <button class="clear-input">✕</button>
+                </div>
+                <div class="form-group">
+                    <label>邮箱</label>
+                    <input type="email" id="email" placeholder="请输入邮箱地址" value="mycv@gmail.com">
+                    <button class="clear-input">✕</button>
+                </div>
+                <div class="form-group">
+                    <label>头像</label>
+                    <div class="avatar-upload">
+                        <input type="file" id="avatar-upload" accept="image/*">
+                        <div class="avatar-preview">
+                            <img id="avatar-preview-img" src="" alt="">
+                        </div>
+                        <div class="avatar-controls">
+                            <button class="avatar-button" id="upload-avatar">上传头像</button>
+                            <button class="avatar-button" id="remove-avatar">删除</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="job-intention">求职意向</label>
+                    <input type="text" id="job-intention" name="job-intention" placeholder="例如：前端开发工程师">
+                    <button class="clear-input" onclick="document.getElementById('job-intention').value=''; document.getElementById('job-intention').focus();">✕</button>
+                </div>
+                
+                <div class="section-divider">
+                    <h3>更多信息</h3>
+                </div>
+                
+                <div class="additional-options">
+                    <button class="option-tag" data-field="wechat">
+                        <span>+ 微信号</span>
+                    </button>
+                    <button class="option-tag" data-field="github">
+                        <span>+ GitHub</span>
+                    </button>
+                    <button class="option-tag" data-field="expected-salary">
+                        <span>+ 期望薪资</span>
+                    </button>
+                    <button class="option-tag" data-field="age">
+                        <span>+ 年龄</span>
+                    </button>
+                    <button class="option-tag" data-field="work-years">
+                        <span>+ 工作年限</span>
+                    </button>
+                    <button class="option-tag" data-field="gender">
+                        <span>+ 性别</span>
+                    </button>
+                    <button class="option-tag" data-field="height">
+                        <span>+ 身高</span>
+                    </button>
+                    <button class="option-tag" data-field="weight">
+                        <span>+ 体重</span>
+                    </button>
+                    <button class="option-tag" data-field="nationality">
+                        <span>+ 民族</span>
+                    </button>
+                    <button class="option-tag" data-field="politics">
+                        <span>+ 政治面貌</span>
+                    </button>
+                    <button class="option-tag" data-field="marital">
+                        <span>+ 婚姻状况</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="job-info-edit" class="edit-section">
+                <div class="edit-header">
+                    <h2>求职意向</h2>
+                </div>
+                <div class="form-group">
+                    <label>当前状态</label>
+                    <input type="text" id="current-status" placeholder="如：应届毕业生" value="应届毕业生">
+                    <button class="clear-input">✕</button>
+                </div>
+                <div class="form-group">
+                    <label>职位名称</label>
+                    <input type="text" id="job-title" placeholder="如：移动端开发" value="移动端开发">
+                    <button class="clear-input">✕</button>
+                </div>
+                <div class="form-group">
+                    <label>期望工作地</label>
+                    <input type="text" id="job-location" placeholder="如：深圳" value="深圳">
+                    <button class="clear-input">✕</button>
+                </div>
+                <div class="form-group">
+                    <label>期望薪资</label>
+                    <input type="text" id="expected-salary" placeholder="如：15k-20k">
+                    <button class="clear-input">✕</button>
+                </div>
+            </div>
+            
+            <div id="other-info-edit" class="edit-section">
+                <div class="edit-header">
+                    <h2>其他信息</h2>
+                </div>
+                <div class="form-group">
+                    <label>最高学历</label>
+                    <input type="text" id="highest-education" placeholder="请输入最高学历">
+                    <button class="clear-input">✕</button>
+                </div>
+                <div class="form-group">
+                    <label>个人网站</label>
+                    <input type="text" id="personal-website" placeholder="请输入个人网站地址">
+                    <button class="clear-input">✕</button>
+                </div>
+                
+                <div class="section-divider">
+                    <h3>更多</h3>
+                </div>
+                
+                <div class="additional-options">
+                    <button class="option-tag" data-field="driver-license">
+                        <span>+ 驾驶证书</span>
+                    </button>
+                    <button class="option-tag" data-field="age">
+                        <span>+ 年龄</span>
+                    </button>
+                    <button class="option-tag" data-field="work-years">
+                        <span>+ 工作年限</span>
+                    </button>
+                    <button class="option-tag" data-field="gender">
+                        <span>+ 性别</span>
+                    </button>
+                    <button class="option-tag" data-field="height">
+                        <span>+ 身高</span>
+                    </button>
+                    <button class="option-tag" data-field="weight">
+                        <span>+ 体重</span>
+                    </button>
+                    <button class="option-tag" data-field="nationality">
+                        <span>+ 民族</span>
+                    </button>
+                    <button class="option-tag" data-field="politics">
+                        <span>+ 政治面貌</span>
+                    </button>
+                    <button class="option-tag" data-field="marital">
+                        <span>+ 婚姻状况</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 教育经历编辑区 -->
+            <div id="education-edit" class="edit-section">
+                <div class="rich-text-editor">
+                    <div class="editor-toolbar">
+                        <button class="toolbar-btn" data-command="bold" title="加粗"><i class="fas fa-bold">B</i></button>
+                        <button class="toolbar-btn" data-command="italic" title="斜体"><i class="fas fa-italic">I</i></button>
+                        <button class="toolbar-btn" data-command="underline" title="下划线"><i class="fas fa-underline">U</i></button>
+                        <span class="toolbar-separator">|</span>
+                        <button class="toolbar-btn" data-command="justifyLeft" title="左对齐"><i class="fas fa-align-left">⟵</i></button>
+                        <button class="toolbar-btn" data-command="justifyCenter" title="居中对齐"><i class="fas fa-align-center">⟷</i></button>
+                        <button class="toolbar-btn" data-command="justifyRight" title="右对齐"><i class="fas fa-align-right">⟶</i></button>
+                        <span class="toolbar-separator">|</span>
+                        <button class="toolbar-btn" data-command="insertUnorderedList" title="无序列表"><i class="fas fa-list-ul">•</i></button>
+                        <button class="toolbar-btn" data-command="insertOrderedList" title="有序列表"><i class="fas fa-list-ol">1.</i></button>
+                        <button class="toolbar-btn" data-command="createLink" title="插入链接"><i class="fas fa-link">🔗</i></button>
+                    </div>
+                    <div class="editor-content" contenteditable="true" id="education-content">
+                        <div class="education-item">
+                            <div class="edu-header">
+                                <span class="edu-school">老鱼大学</span>
+                                <span class="edu-time">2020-09 ~ 2024-07</span>
+                            </div>
+                            <div class="edu-major">计算机科学与技术 本科</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 专业技能编辑区 -->
+            <div id="skills-edit" class="edit-section">
+                <div class="rich-text-editor">
+                    <div class="editor-toolbar">
+                        <button class="toolbar-btn" data-command="bold" title="加粗"><i class="fas fa-bold">B</i></button>
+                        <button class="toolbar-btn" data-command="italic" title="斜体"><i class="fas fa-italic">I</i></button>
+                        <button class="toolbar-btn" data-command="underline" title="下划线"><i class="fas fa-underline">U</i></button>
+                        <span class="toolbar-separator">|</span>
+                        <button class="toolbar-btn" data-command="justifyLeft" title="左对齐"><i class="fas fa-align-left">⟵</i></button>
+                        <button class="toolbar-btn" data-command="justifyCenter" title="居中对齐"><i class="fas fa-align-center">⟷</i></button>
+                        <button class="toolbar-btn" data-command="justifyRight" title="右对齐"><i class="fas fa-align-right">⟶</i></button>
+                        <span class="toolbar-separator">|</span>
+                        <button class="toolbar-btn" data-command="insertUnorderedList" title="无序列表"><i class="fas fa-list-ul">•</i></button>
+                        <button class="toolbar-btn" data-command="insertOrderedList" title="有序列表"><i class="fas fa-list-ol">1.</i></button>
+                        <button class="toolbar-btn" data-command="createLink" title="插入链接"><i class="fas fa-link">🔗</i></button>
+                    </div>
+                    <div class="editor-content" contenteditable="true" id="skills-content">
+                        <p>描述你的技能，尽量具体和量化，使用数字、百分比或具体的项目经验来支持你的陈述。</p>
+                        <p>如，"成功管理了5个项目，每个项目的预算超过100万美元，并在预定时间内完成了它们"</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 工作经历编辑区 -->
+            <div id="work-edit" class="edit-section">
+                <!-- 富文本编辑器将由JavaScript动态创建 -->
+            </div>
+
+            <!-- 项目经历编辑区 -->
+            <div id="project-edit" class="edit-section">
+                <!-- 富文本编辑器将由JavaScript动态创建 -->
+            </div>
+
+            <!-- 其他模块的编辑区 -->
+            <!-- 大学信息、荣誉奖项、研究经历、作品集、其他经历、个人简介 -->
+        </div>
+
+        <!-- 右侧预览区 -->
+        <div class="preview-panel">
+            <div class="preview-header">
+                <div class="preview-controls">
+                    <button id="download-pdf" class="download-button">下载PDF</button>
+                    <div class="style-controls">
+                        <button class="style-button">模板风格</button>
+                        <button class="style-button">添加模块</button>
+                        <button class="style-button">间距配置</button>
+                    </div>
+                </div>
+            </div>
+            <div id="resume-preview" class="preview-content">
+                <!-- 预览内容将通过JavaScript动态生成 -->
+                <div class="resume-header">
+                    <div class="resume-name">老鱼简历</div>
+                    <div class="resume-contact">
+                        <span>📱 13818996520</span>
+                        <span>📧 mycv@gmail.com</span>
+                    </div>
+                    <div class="resume-status">
+                        <span style="display: none;"></span>
+                        <span style="display: none;">🖥️ 移动端开发</span>
+                        <span>📍 深圳</span>
+                    </div>
+                    <div class="resume-avatar">
+                        <img src="" alt="头像" id="preview-avatar">
+                    </div>
+                </div>
+
+                <div class="resume-section" id="preview-education">
+                    <div class="section-title">教育经历</div>
+                    <div class="section-content">
+                        <div class="education-item">
+                            <div class="edu-header">
+                                <span class="edu-school">老鱼大学</span>
+                                <span class="edu-time">2020-09 ~ 2024-07</span>
+                            </div>
+                            <div class="edu-major">计算机科学与技术 本科</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resume-section" id="preview-skills">
+                    <div class="section-title">专业技能</div>
+                    <div class="section-content">
+                        <div class="skill-description">
+                            <p>具体技能描述...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resume-section" id="preview-work">
+                    <div class="section-title">工作经历</div>
+                    <div class="section-content">
+                        <div class="work-item">
+                            <div class="work-header">
+                                <span class="work-company">鱼互联网有限公司</span>
+                                <span class="work-time">2023-02 ~ 2023-04</span>
+                            </div>
+                            <div class="work-position">创新业务部 全栈开发 杭州</div>
+                            <div class="work-description">
+                                <p>工作描述...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 添加其他模块的预览区域 -->
+                <div class="resume-section" id="preview-project" style="display: block;">
+                    <div class="section-title">项目经历</div>
+                    <div class="section-content">
+                        <div class="project-item">
+                            <div class="project-header">
+                                <span class="project-name">简历生成器项目</span>
+                                <span class="project-time">2023-09 ~ 2023-12</span>
+                            </div>
+                            <div class="project-role">前端开发</div>
+                            <div class="project-description">
+                                <p>使用HTML、CSS和JavaScript开发的在线简历生成工具，支持多种模块自定义和PDF导出功能。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resume-section" id="preview-university" style="display: none;">
+                    <div class="section-title">大学信息</div>
+                    <div class="section-content">
+                        <div class="university-item">
+                            <p>GPA: 3.8/4.0</p>
+                            <p>主修课程: 数据结构、算法分析、计算机网络、操作系统</p>
+                            <p>学术活动: 参与校内算法竞赛，获得二等奖</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resume-section" id="preview-awards" style="display: none;">
+                    <div class="section-title">荣誉奖项</div>
+                    <div class="section-content">
+                        <div class="award-item">
+                            <div class="award-header">
+                                <span class="award-name">优秀毕业生</span>
+                                <span class="award-time">2024-06</span>
+                            </div>
+                            <div class="award-description">
+                                <p>校级优秀毕业生称号，综合评比前5%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resume-section" id="preview-research" style="display: none;">
+                    <div class="section-title">研究经历</div>
+                    <div class="section-content">
+                        <div class="research-item">
+                            <div class="research-header">
+                                <span class="research-title">人工智能在教育领域的应用研究</span>
+                                <span class="research-time">2022-03 ~ 2023-01</span>
+                            </div>
+                            <div class="research-description">
+                                <p>参与校内研究项目，研究AI技术如何改善在线教育体验</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resume-section" id="preview-portfolio" style="display: none;">
+                    <div class="section-title">作品集</div>
+                    <div class="section-content">
+                        <div class="portfolio-item">
+                            <div class="portfolio-header">
+                                <span class="portfolio-title">个人技术博客</span>
+                                <span class="portfolio-link">blog.example.com</span>
+                            </div>
+                            <div class="portfolio-description">
+                                <p>记录学习心得和技术分享，累计发表30+技术文章</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resume-section" id="preview-other" style="display: none;">
+                    <div class="section-title">其他经历</div>
+                    <div class="section-content">
+                        <div class="other-item">
+                            <div class="other-header">
+                                <span class="other-title">校学生会技术部</span>
+                                <span class="other-time">2021-09 ~ 2022-06</span>
+                            </div>
+                            <div class="other-description">
+                                <p>负责学生会网站维护和技术支持工作</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resume-section" id="preview-personal" style="display: none;">
+                    <div class="section-title">个人简介</div>
+                    <div class="section-content">
+                        <div class="personal-description">
+                            <p>热爱编程，对新技术充满好奇心。善于团队协作，有良好的沟通能力和解决问题的能力。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 

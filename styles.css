@@ -1,0 +1,699 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Microsoft YaHei", sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* 左侧选项栏样式 */
+.options-panel {
+    width: 200px;
+    background-color: white;
+    border-right: 1px solid #e0e0e0;
+    padding: 20px 10px;
+    overflow-y: auto;
+}
+
+.options-panel h2 {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.option-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+/* 只有当模块开关打开时才显示手型 */
+.option-item input:checked ~ span {
+    cursor: pointer;
+}
+
+.option-item:hover {
+    background-color: #f5f5f5;
+}
+
+.option-item.active {
+    background-color: #e6f0ff;
+    border-left: 3px solid #4285f4;
+    padding-left: 7px;
+}
+
+.option-item span {
+    font-size: 14px;
+    color: #333;
+}
+
+/* 开关样式 */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    z-index: 2;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #4285f4;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.add-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: white;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #666;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.add-button:hover {
+    background-color: #f5f5f5;
+}
+
+.add-button span {
+    margin-right: 5px;
+    font-size: 16px;
+}
+
+/* 中间编辑区样式 */
+.edit-panel {
+    flex: 1;
+    background-color: white;
+    border-right: 1px solid #e0e0e0;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.edit-header h2 {
+    font-size: 16px;
+    color: #333;
+}
+
+.edit-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.edit-button:hover {
+    background-color: #f0f0f0;
+}
+
+.edit-section {
+    display: none;
+}
+
+.edit-section.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #666;
+}
+
+.form-group input, .form-group textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-group input:focus, .form-group textarea:focus {
+    border-color: #4285f4;
+    outline: none;
+}
+
+.clear-input {
+    position: absolute;
+    right: 10px;
+    top: 32px;
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 12px;
+    display: none;
+}
+
+.form-group input:not(:placeholder-shown) + .clear-input {
+    display: block;
+}
+
+.avatar-upload {
+    display: flex;
+    flex-direction: column;
+}
+
+.avatar-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    background-color: #f5f5f5;
+    position: relative;
+}
+
+.avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.avatar-button {
+    padding: 6px 12px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #333;
+    cursor: pointer;
+}
+
+.avatar-button:hover {
+    background-color: #e5e5e5;
+}
+
+.avatar-status {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.status-text {
+    font-size: 12px;
+    color: #666;
+    margin-right: 5px;
+}
+
+/* 小型开关样式 */
+.switch.small {
+    width: 30px;
+    height: 16px;
+}
+
+.switch.small .slider:before {
+    height: 12px;
+    width: 12px;
+    left: 2px;
+    bottom: 2px;
+}
+
+.switch.small input:checked + .slider:before {
+    transform: translateX(14px);
+}
+
+input[type="file"] {
+    display: none;
+}
+
+/* 右侧预览区样式 */
+.preview-panel {
+    width: 40%;
+    background-color: #f5f5f5;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.preview-header {
+    margin-bottom: 20px;
+}
+
+.preview-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.download-button {
+    padding: 8px 15px;
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.style-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.style-button {
+    padding: 6px 10px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #666;
+}
+
+.preview-content {
+    background-color: white;
+    border-radius: 4px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 简历样式 */
+.resume-header {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.resume-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.resume-contact, .resume-status {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #666;
+}
+
+.resume-avatar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 100px;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.resume-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.resume-section {
+    margin-bottom: 25px;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #4285f4;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #4285f4;
+    margin-bottom: 15px;
+}
+
+.section-content {
+    font-size: 14px;
+    color: #333;
+}
+
+.education-item, .work-item {
+    margin-bottom: 15px;
+}
+
+.edu-header, .work-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.edu-school, .work-company {
+    font-weight: bold;
+}
+
+.edu-time, .work-time {
+    color: #666;
+}
+
+.edu-major, .work-position {
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.work-description p {
+    margin-bottom: 5px;
+    line-height: 1.5;
+}
+
+/* 其他信息区域样式 */
+.section-divider {
+    margin: 20px 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.section-divider h3 {
+    font-size: 16px;
+    color: #333;
+    font-weight: normal;
+}
+
+.additional-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* 添加字段按钮样式 */
+.option-tag {
+    padding: 6px 12px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    margin: 5px;
+}
+
+.option-tag:hover {
+    background-color: #e5e5e5;
+}
+
+.option-tag span {
+    display: flex;
+    align-items: center;
+}
+
+/* 删除字段按钮样式 */
+.remove-field {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.remove-field:hover {
+    color: #f44336;
+}
+
+/* 添加样式使基本信息区域的可选字段更美观 */
+#basic-info-edit .section-divider {
+    margin-top: 30px;
+}
+
+#basic-info-edit .additional-options {
+    margin-bottom: 20px;
+}
+
+/* 添加拖动手柄样式 - 十字箭头版本 */
+.drag-handle {
+    cursor: move;      /* 旧版浏览器支持 */
+    cursor: all-scroll; /* 显示十字箭头 */
+    margin-right: 8px;
+    color: #999;
+    font-size: 16px;
+}
+
+.drag-handle:hover {
+    color: #333;
+}
+
+.option-item.dragging .drag-handle {
+    cursor: grabbing;  /* 拖动时显示抓取中手势 */
+}
+
+/* 固定模块样式 */
+.option-item.fixed {
+    background-color: #f8f8f8;
+    border-left: 3px solid #4285f4;
+    padding-left: 7px;
+    margin-bottom: 10px;
+}
+
+.option-item.fixed:hover {
+    background-color: #f0f0f0;
+}
+
+/* 禁用的开关样式 */
+.switch.disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.switch.disabled .slider {
+    cursor: not-allowed;
+}
+
+/* 富文本编辑器样式 */
+.rich-text-editor {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.editor-toolbar {
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    padding: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.toolbar-btn {
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    padding: 5px 10px;
+    margin-right: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.toolbar-btn:hover {
+    background-color: #e0e0e0;
+    border-color: #ccc;
+}
+
+.toolbar-btn.active {
+    background-color: #e0e0e0;
+    border-color: #ccc;
+}
+
+.toolbar-separator {
+    margin: 0 5px;
+    color: #ccc;
+}
+
+.editor-content {
+    min-height: 200px;
+    padding: 15px;
+    background-color: white;
+    overflow-y: auto;
+    line-height: 1.5;
+}
+
+.editor-content:focus {
+    outline: none;
+}
+
+/* 编辑器内容样式 */
+.editor-content p {
+    margin-bottom: 10px;
+}
+
+.editor-content ul, .editor-content ol {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
+.editor-content a {
+    color: #4285f4;
+    text-decoration: underline;
+}
+
+/* 添加标题编辑样式 */
+.title-edit-input {
+    font-size: 1.5em;
+    font-weight: bold;
+    width: 80%;
+    padding: 5px;
+    border: 1px solid #4285f4;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+/* 模态对话框样式 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    max-width: 90%;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.modal-buttons button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+#cancel-edit {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+#confirm-edit {
+    background-color: #4285f4;
+    color: white;
+}
+
+#cancel-edit:hover {
+    background-color: #e0e0e0;
+}
+
+#confirm-edit:hover {
+    background-color: #3367d6;
+}
+
+/* 输入框错误状态 */
+.modal-input.error {
+    border-color: #ff4d4f;
+}
+
+.modal-input.error::placeholder {
+    color: #ff4d4f;
+} 
