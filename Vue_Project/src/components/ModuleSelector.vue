@@ -106,12 +106,12 @@ const addNewModule = () => {
           </div>
         </template>
       </draggable>
-    </div>
-    
-    <div class="add-module">
-      <a-button type="dashed" block @click="addNewModule">
-        + 添加自定义模块
-      </a-button>
+      
+      <!-- 添加模块按钮 -->
+      <div class="module-item add-module-item" @click="addNewModule">
+        <span class="add-icon">+</span>
+        <span class="module-name">添加自定义模块</span>
+      </div>
     </div>
   </div>
 </template>
@@ -170,8 +170,15 @@ const addNewModule = () => {
   background: #c8ebfb;
 }
 
-.add-module {
-  padding: 16px;
-  border-top: 1px solid #f0f0f0;
+.add-module-item {
+  color: #1890ff;
+  background-color: #f0f8ff;
+  margin-top: 10px;
+}
+
+.add-icon {
+  font-size: 18px;
+  margin-right: 8px;
+  font-weight: bold;
 }
 </style> 

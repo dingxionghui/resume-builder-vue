@@ -1,51 +1,37 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
+import { useResumeStore } from './store/resume';
 import ModuleSelector from './components/ModuleSelector.vue';
 import ModuleEditor from './components/ModuleEditor.vue';
 import ResumePreview from './components/ResumePreview.vue';
 
-const currentModuleId = ref('basic-info');
-const currentModuleTitle = computed(() => {
-  const titles: Record<string, string> = {
-    'basic-info': '基本信息',
-    'education': '教育经历',
-    'skills': '专业技能',
-    // 其他模块...
-  };
-  return titles[currentModuleId.value] || '编辑模块';
-});
+const store = useResumeStore();
+const activeModuleId = ref('basic-info');
 
-const handleModuleSelect = (moduleId: string) => {
-  currentModuleId.value = moduleId;
+const handleSelectModule = (moduleId: string) => {
+  activeModuleId.value = moduleId;
 };
 </script>
 
 <template>
   <a-layout style="min-height: 100vh; width: 100%;">
-    <!-- 左侧模块选择 -->
-    <a-layout-sider width="200" theme="light">
-      <div class="logo">简历生成器</div>
-      <module-selector @select-module="handleModuleSelect" />
-    </a-layout-sider>
-    
-    <!-- 中间和右侧内容 -->
     <a-layout>
-      <a-layout-content>
+      <!-- 左侧模块选择器 -->
+      <a-layout-sider width="250" theme="light" class="sidebar">
+        <ModuleSelector @select-module="handleSelectModule" />
+      </a-layout-sider>
+      
+      <a-layout-content class="content">
         <a-row>
-          <!-- 编辑区 -->
           <a-col :span="12">
-            <div style="padding: 20px; background: #f5f5f5; height: 100%;">
-              <a-card :title="currentModuleTitle" class="edit-card">
-                <module-editor :module-id="currentModuleId" />
-              </a-card>
-            </div>
+            <a-card title="编辑模块" class="edit-card">
+              <ModuleEditor :module-id="activeModuleId" />
+            </a-card>
           </a-col>
-          
-          <!-- 预览区 -->
           <a-col :span="12">
-            <div style="padding: 20px; background: #f5f5f5; height: 100%;">
-              <resume-preview />
-            </div>
+            <a-card title="预览" class="preview-card">
+              <ResumePreview />
+            </a-card>
           </a-col>
         </a-row>
       </a-layout-content>
@@ -54,18 +40,26 @@ const handleModuleSelect = (moduleId: string) => {
 </template>
 
 <style scoped>
-.logo {
-  height: 50px;
-  line-height: 50px;
-  color: #4285f4;
-  font-size: 18px;
-  font-weight: bold;
-  text-align: center;
-  border-bottom: 1px solid #e8e8e8;
-  margin-bottom: 10px;
+.sidebar {
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
 }
 
-.edit-card {
-  height: 100%;
+.content {
+  padding-top: 0;
+}
+
+.edit-card, .preview-card {
+  margin: 0 24px 24px 24px;
+  height: calc(100vh - 24px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+:deep(.ant-card-body) {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
 }
 </style>
