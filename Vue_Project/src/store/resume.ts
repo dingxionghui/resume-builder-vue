@@ -116,25 +116,20 @@ export const useResumeStore = defineStore('resume', {
     },
     
     reorderModules(newOrder: string[]) {
-      // 保持基本信息模块在第一位
-      const basicInfoModule = this.modules.find(m => m.id === 'basic-info');
-      const otherModules = this.modules.filter(m => m.id !== 'basic-info');
+      console.log('重新排序模块:', newOrder);
       
-      // 根据新顺序排序其他模块
-      const sortedModules = newOrder
-        .filter(id => id !== 'basic-info')
-        .map(id => otherModules.find(m => m.id === id))
+      // 创建一个新的模块数组，按照newOrder的顺序排列
+      const orderedModules = newOrder
+        .map(id => this.modules.find(m => m.id === id))
         .filter(m => m !== undefined) as Module[];
       
-      // 将未包含在新顺序中的模块添加到末尾
-      const remainingModules = otherModules.filter(m => !newOrder.includes(m.id));
+      // 添加任何不在newOrder中的模块（如果有的话）
+      const remainingModules = this.modules.filter(m => !newOrder.includes(m.id));
       
       // 更新模块数组
-      this.modules = [
-        basicInfoModule as Module,
-        ...sortedModules,
-        ...remainingModules
-      ];
+      this.modules = [...orderedModules, ...remainingModules];
+      
+      console.log('模块排序后:', this.modules.map(m => m.id));
     }
   },
   
