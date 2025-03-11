@@ -15,8 +15,10 @@ const editorRef = ref<HTMLDivElement | null>(null);
 const initEditor = () => {
   const module = modules.value.find(m => m.id === props.moduleId);
   if (module && editorRef.value) {
-    console.log(`初始化模块 ${props.moduleId} 内容:`, module.content.substring(0, 50));
-    editorRef.value.innerHTML = module.content || '';
+    // 安全地访问content属性
+    const content = module.content || '';
+    console.log(`初始化模块 ${props.moduleId} 内容:`, content.substring(0, 50));
+    editorRef.value.innerHTML = content;
   }
 };
 
