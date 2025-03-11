@@ -21,24 +21,35 @@ const handleModuleSelect = (moduleId: string) => {
 </script>
 
 <template>
-  <a-layout style="min-height: 100vh">
+  <a-layout style="min-height: 100vh; width: 100%;">
     <!-- 左侧模块选择 -->
-    <a-layout-sider width="250" theme="light">
+    <a-layout-sider width="200" theme="light">
       <div class="logo">简历生成器</div>
       <module-selector @select-module="handleModuleSelect" />
     </a-layout-sider>
     
-    <!-- 中间编辑区 -->
-    <a-layout-content style="padding: 20px">
-      <a-card :title="currentModuleTitle">
-        <module-editor :module-id="currentModuleId" />
-      </a-card>
-    </a-layout-content>
-    
-    <!-- 右侧预览 -->
-    <a-layout-sider width="400" theme="light" style="padding: 20px">
-      <resume-preview />
-    </a-layout-sider>
+    <!-- 中间和右侧内容 -->
+    <a-layout>
+      <a-layout-content>
+        <a-row>
+          <!-- 编辑区 -->
+          <a-col :span="12">
+            <div style="padding: 20px; background: #f5f5f5; height: 100%;">
+              <a-card :title="currentModuleTitle" class="edit-card">
+                <module-editor :module-id="currentModuleId" />
+              </a-card>
+            </div>
+          </a-col>
+          
+          <!-- 预览区 -->
+          <a-col :span="12">
+            <div style="padding: 20px; background: #f5f5f5; height: 100%;">
+              <resume-preview />
+            </div>
+          </a-col>
+        </a-row>
+      </a-layout-content>
+    </a-layout>
   </a-layout>
 </template>
 
@@ -52,5 +63,9 @@ const handleModuleSelect = (moduleId: string) => {
   text-align: center;
   border-bottom: 1px solid #e8e8e8;
   margin-bottom: 10px;
+}
+
+.edit-card {
+  height: 100%;
 }
 </style>

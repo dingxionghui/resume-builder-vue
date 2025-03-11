@@ -3,6 +3,7 @@ import { ref, watch, computed } from 'vue';
 import { useResumeStore } from '../store/resume';
 import BasicInfoEditor from './editors/BasicInfoEditor.vue';
 import RichTextEditor from './editors/RichTextEditor.vue';
+import TextareaEditor from './editors/ModuleEditor.vue'; // 重命名为TextareaEditor更清晰
 
 const props = defineProps<{
   moduleId: string
@@ -15,6 +16,7 @@ const editorComponent = computed(() => {
   if (props.moduleId === 'basic-info') {
     return BasicInfoEditor;
   } else {
+    // 使用富文本编辑器
     return RichTextEditor;
   }
 });
@@ -42,7 +44,6 @@ watch(() => props.moduleId, () => {
     <component 
       :is="editorComponent" 
       :module-id="moduleId" 
-      :content="moduleContent"
     />
   </div>
 </template>

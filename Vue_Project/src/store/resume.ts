@@ -3,27 +3,58 @@ import { defineStore } from 'pinia';
 interface Module {
   id: string;
   name: string;
+  content: string;
   enabled: boolean;
-  fixed: boolean;
+  fixed?: boolean;
 }
 
 interface BasicInfo {
   name: string;
   phone: string;
   email: string;
-  jobIntention: string;
   avatar: string;
+  jobIntention: string;
   [key: string]: string;
 }
 
 export const useResumeStore = defineStore('resume', {
   state: () => ({
     modules: [
-      { id: 'basic-info', name: '基本信息', enabled: true, fixed: true },
-      { id: 'education', name: '教育经历', enabled: true, fixed: false },
-      { id: 'skills', name: '专业技能', enabled: true, fixed: false },
-      { id: 'work', name: '工作经历', enabled: true, fixed: false },
-      { id: 'project', name: '项目经历', enabled: true, fixed: false },
+      { 
+        id: 'basic-info', 
+        name: '基本信息', 
+        enabled: true, 
+        fixed: true,
+        content: '' 
+      },
+      { 
+        id: 'education', 
+        name: '教育经历', 
+        enabled: true, 
+        fixed: false,
+        content: '在这里填写你的教育经历，按照时间倒序排列。\n\n例如：\n学校名称：XX大学\n专业：计算机科学与技术\n学历：本科\n在校时间：2019-2023' 
+      },
+      { 
+        id: 'skills', 
+        name: '专业技能', 
+        enabled: true, 
+        fixed: false,
+        content: '描述你的技能，尽量具体和量化，使用数字、百分比或具体的项目经验来支持你的陈述。\n\n例如：\n• 熟练掌握 HTML、CSS、JavaScript\n• 熟悉 Vue.js、React 等前端框架\n• 了解 Node.js 和常用后端技术' 
+      },
+      { 
+        id: 'work', 
+        name: '工作经历', 
+        enabled: true, 
+        fixed: false,
+        content: '按照时间倒序描述你的工作经历。\n\n例如：\n公司名称：XX科技有限公司\n职位：前端开发工程师\n工作时间：2023.7 - 至今\n工作内容：\n• 负责公司主要产品的前端开发\n• 参与技术方案设计和评审' 
+      },
+      { 
+        id: 'project', 
+        name: '项目经历', 
+        enabled: true, 
+        fixed: false,
+        content: '描述你参与过的重要项目。\n\n例如：\n项目名称：XX管理系统\n项目描述：一个基于Vue3的后台管理系统\n负责内容：\n• 核心功能模块开发\n• 性能优化' 
+      },
       { id: 'university', name: '大学信息', enabled: false, fixed: false },
       { id: 'awards', name: '荣誉奖项', enabled: false, fixed: false },
       { id: 'research', name: '研究经历', enabled: false, fixed: false },
@@ -39,8 +70,6 @@ export const useResumeStore = defineStore('resume', {
       jobIntention: '前端开发工程师',
       avatar: '',
     } as BasicInfo,
-    
-    moduleContents: {} as Record<string, string>,
   }),
   
   actions: {
@@ -49,11 +78,23 @@ export const useResumeStore = defineStore('resume', {
     },
     
     updateModuleContent(moduleId: string, content: string) {
-      this.moduleContents[moduleId] = content;
+      const moduleIndex = this.modules.findIndex(m => m.id === moduleId);
+      if (moduleIndex !== -1) {
+        this.modules[moduleIndex] = {
+          ...this.modules[moduleIndex],
+          content: content
+        };
+      }
     },
     
     getModuleContent(moduleId: string) {
-      return this.moduleContents[moduleId] || '';
+      const module = this.modules.find(m => m.id === moduleId);
+      return module?.content || '';
+    },
+    
+    getModuleName(moduleId: string) {
+      const module = this.modules.find(m => m.id === moduleId);
+      return module?.name || '';
     },
     
     toggleModule(moduleId: string) {
@@ -95,5 +136,15 @@ export const useResumeStore = defineStore('resume', {
         ...remainingModules
       ];
     }
-  }
+  },
+  
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        key: 'resume-store',
+        storage: localStorage,
+      },
+    ],
+  },
 }); 
