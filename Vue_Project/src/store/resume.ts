@@ -70,6 +70,8 @@ export const useResumeStore = defineStore('resume', {
       jobIntention: '前端开发工程师',
       avatar: '',
     } as BasicInfo,
+    
+    customFieldLabels: {} as Record<string, string>,
   }),
   
   actions: {
@@ -130,7 +132,15 @@ export const useResumeStore = defineStore('resume', {
       this.modules = [...orderedModules, ...remainingModules];
       
       console.log('模块排序后:', this.modules.map(m => m.id));
-    }
+    },
+    
+    setCustomFieldLabel(key: string, label: string) {
+      this.customFieldLabels[key] = label;
+    },
+    
+    getCustomFieldLabel(key: string) {
+      return this.customFieldLabels[key] || key;
+    },
   },
   
   persist: {

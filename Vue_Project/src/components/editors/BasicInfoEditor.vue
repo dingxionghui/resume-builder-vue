@@ -1,9 +1,20 @@
 <script setup lang="ts">
 import { useResumeStore } from '../../store/resume';
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick, onMounted } from 'vue';
 
 const store = useResumeStore();
 const fileInput = ref<HTMLInputElement | null>(null);
+const customFieldName = ref('');
+const customFieldLabel = ref('');
+const showCustomFieldForm = ref(false);
+
+// 添加一个变量控制模态框的挂载点
+const modalContainer = ref(null);
+
+// 在组件挂载后设置挂载点
+onMounted(() => {
+  modalContainer.value = document.body;
+});
 
 // 定义额外字段选项
 const extraFieldOptions = [
@@ -22,10 +33,15 @@ const extraFieldOptions = [
   { key: 'expectedSalary', label: '期望薪资' }
 ];
 
+// 用户自定义的额外字段
+const customExtraFields = ref<Array<{ key: string, label: string }>>([]);
+
 // 计算未添加的字段
 const availableExtraFields = computed(() => {
   const currentFields = Object.keys(store.basicInfo);
-  return extraFieldOptions.filter(field => !currentFields.includes(field.key));
+  // 合并预定义字段和自定义字段
+  const allOptions = [...extraFieldOptions, ...customExtraFields.value];
+  return allOptions.filter(field => !currentFields.includes(field.key));
 });
 
 const updateField = (field: string, value: string) => {
@@ -70,8 +86,50 @@ const removeAvatar = () => {
 
 // 获取字段的显示标签
 const getFieldLabel = (key: string) => {
-  const field = extraFieldOptions.find(f => f.key === key);
-  return field ? field.label : key;
+  // 先检查预定义字段
+  const predefinedField = extraFieldOptions.find(f => f.key === key);
+  if (predefinedField) return predefinedField.label;
+  
+  // 再检查自定义字段
+  const customField = customExtraFields.value.find(f => f.key === key);
+  if (customField) return customField.label;
+  
+  return key;
+};
+
+// 修改打开自定义字段表单的方法
+const toggleCustomFieldForm = () => {
+  showCustomFieldForm.value = !showCustomFieldForm.value;
+  if (showCustomFieldForm.value) {
+    customFieldLabel.value = '';
+  }
+};
+
+// 添加自定义字段
+const addCustomField = () => {
+  if (customFieldLabel.value.trim() === '') {
+    return;
+  }
+  
+  // 生成一个唯一的key
+  const key = 'custom_' + Date.now();
+  const label = customFieldLabel.value.trim();
+  
+  // 添加到自定义字段列表
+  customExtraFields.value.push({
+    key,
+    label
+  });
+  
+  // 保存自定义字段标签
+  store.setCustomFieldLabel(key, label);
+  
+  // 立即添加到基本信息中
+  addExtraField({ key, label });
+  
+  // 重置表单
+  customFieldLabel.value = '';
+  showCustomFieldForm.value = false;
 };
 </script>
 
@@ -170,6 +228,43 @@ const getFieldLabel = (key: string) => {
       >
         <span>+ {{ field.label }}</span>
       </a-button>
+      
+      <!-- 添加自定义字段按钮 -->
+      <a-button 
+        class="option-tag custom-field-btn" 
+        @click="toggleCustomFieldForm"
+      >
+        <span>+ 自定义字段</span>
+      </a-button>
+    </div>
+    
+    <!-- 内联自定义字段表单 -->
+    <div v-if="showCustomFieldForm" class="custom-field-form">
+      <div class="form-header">
+        <h4>添加自定义字段</h4>
+        <a-button 
+          type="text" 
+          size="small"
+          @click="toggleCustomFieldForm"
+        >
+          <span class="close-icon">×</span>
+        </a-button>
+      </div>
+      
+      <a-form layout="vertical">
+        <a-form-item label="字段名称" required>
+          <a-input 
+            v-model:value="customFieldLabel" 
+            placeholder="例如：证书、特长、兴趣爱好等"
+          />
+          <div class="field-hint">此名称将显示在简历中</div>
+        </a-form-item>
+        
+        <a-form-item>
+          <a-button type="primary" @click="addCustomField">添加</a-button>
+          <a-button style="margin-left: 8px;" @click="toggleCustomFieldForm">取消</a-button>
+        </a-form-item>
+      </a-form>
     </div>
   </div>
 </template>
@@ -257,5 +352,43 @@ const getFieldLabel = (key: string) => {
 
 .option-tag {
   margin: 5px;
+}
+
+.custom-field-btn {
+  background-color: #f0f8ff;
+  border-color: #1890ff;
+  color: #1890ff;
+}
+
+.field-hint {
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
+}
+
+.custom-field-form {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  border-left: 3px solid #1890ff;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.form-header h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.close-icon {
+  font-size: 16px;
+  font-weight: bold;
 }
 </style> 

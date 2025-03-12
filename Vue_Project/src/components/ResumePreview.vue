@@ -25,16 +25,31 @@ const extraFieldOptions = [
   { key: 'expectedSalary', label: '期望薪资' }
 ];
 
+// 获取字段的显示标签
+const getFieldLabel = (key: string) => {
+  // 先检查预定义字段
+  const predefinedField = extraFieldOptions.find(f => f.key === key);
+  if (predefinedField) return predefinedField.label;
+  
+  // 对于自定义字段，从key中提取标签
+  if (key.startsWith('custom_')) {
+    // 尝试从store中获取自定义标签
+    const customLabel = store.getCustomFieldLabel(key);
+    if (customLabel) return customLabel;
+  }
+  
+  return key;
+};
+
 // 获取已添加的额外字段
 const extraInfoFields = computed(() => {
   const basicFields = ['name', 'phone', 'email', 'avatar', 'jobIntention'];
   const extraKeys = Object.keys(store.basicInfo).filter(key => !basicFields.includes(key));
   
   return extraKeys.map(key => {
-    const option = extraFieldOptions.find(opt => opt.key === key);
     return {
       key,
-      label: option ? option.label : key,
+      label: getFieldLabel(key),
       value: store.basicInfo[key]
     };
   }).filter(field => field.value);
@@ -105,10 +120,11 @@ const downloadPdf = async () => {
     const avatarElement = clonedElement.querySelector('.resume-avatar') as HTMLElement;
     if (avatarElement) {
       avatarElement.style.width = '100px';
-      avatarElement.style.height = '120px';
+      avatarElement.style.height = 'auto';
       avatarElement.style.overflow = 'hidden';
       avatarElement.style.borderRadius = '4px';
       avatarElement.style.border = '1px solid #eee';
+      avatarElement.style.aspectRatio = '3/4';
     }
     
     // 移除所有可能的黑色背景
@@ -383,16 +399,17 @@ const formatContent = (content: string) => {
 
 .resume-avatar {
   width: 100px !important;
-  height: 120px !important;
+  height: auto !important;
   overflow: hidden !important;
   border-radius: 4px !important;
   border: 1px solid #eee !important;
+  aspect-ratio: 3/4 !important;
 }
 
 .resume-avatar img {
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover !important;
+  object-fit: contain !important;
 }
 
 .resume-section {
