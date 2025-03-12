@@ -64,7 +64,7 @@ export const useResumeStore = defineStore('resume', {
     ] as Module[],
     
     basicInfo: {
-      name: '老鱼简历',
+      name: '我的简历',
       phone: '13818996520',
       email: 'mycv@gmail.com',
       jobIntention: '前端开发工程师',
