@@ -3,7 +3,6 @@ import { ref, watch, computed } from 'vue';
 import { useResumeStore } from '../store/resume';
 import BasicInfoEditor from './editors/BasicInfoEditor.vue';
 import RichTextEditor from './editors/RichTextEditor.vue';
-import TextareaEditor from './editors/ModuleEditor.vue'; // 重命名为TextareaEditor更清晰
 
 const props = defineProps<{
   moduleId: string
@@ -27,7 +26,8 @@ const getModuleContent = () => {
     return store.basicInfo;
   } else {
     // 从store中获取其他模块内容
-    return store.getModuleContent?.(props.moduleId) || '';
+    const module = store.modules.find(m => m.id === props.moduleId);
+    return module?.content || '';
   }
 };
 
